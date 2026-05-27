@@ -4,6 +4,7 @@ const cors = require("cors");
 const multer = require("multer");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const Attendance= require("./models/Attendance");
 
 const Student = require("./models/Student");
 
@@ -345,3 +346,47 @@ app.listen(
         );
     }
 );
+
+
+app.post("/markAttendance",async(req,res)=>{
+
+try{
+
+const attendance=
+new Attendance(req.body);
+
+await attendance.save();
+
+res.json({
+message:"Attendance marked"
+});
+
+}
+catch(err){
+
+res.status(500)
+.json(err);
+}
+
+});
+
+
+app.get(
+"/attendance-report",
+async(req,res)=>{
+
+try{
+
+const data=
+await Attendance.find();
+
+res.json(data);
+
+}
+catch(err){
+
+res.status(500)
+.json(err);
+}
+
+});
