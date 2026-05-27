@@ -1,177 +1,212 @@
 import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Link,
-  Navigate
+BrowserRouter as Router,
+Routes,
+Route,
+Link,
+Navigate,
+Outlet
 } from "react-router-dom";
 
 import "./App.css";
 
 import Login from "./Login";
-import Register from "./Register"; // add this
+import Register from "./Register";
 import StudentForm from "./StudentForm";
 import StudentList from "./StudentList";
+
+import Attendance from "./Attendance";
+import AttendanceReport from "./AttendanceReport";
 
 
 
 // Admin Dashboard
-function AdminDashboard() {
 
-  return (
+function AdminDashboard(){
 
-    <div>
+return(
 
-      <h1>Teacher Dashboard</h1>
+<div>
 
-      <nav>
+<h1>Teacher Dashboard</h1>
 
-        <Link to="/admin/add">
-          Add Student
-        </Link>
+<nav>
 
-        {" | "}
+<Link to="/admin/add">
+Add Student
+</Link>
 
-        <Link to="/admin/list">
-          View Students
-        </Link>
+{" | "}
 
-        {" | "}
+<Link to="/admin/list">
+Student List
+</Link>
 
-        <button
-          onClick={() => {
-            localStorage.clear();
-            window.location = "/";
-          }}
-        >
-          Logout
-        </button>
+{" | "}
 
-      </nav>
+<Link to="/admin/attendance">
+Attendance
+</Link>
 
-      <Routes>
+{" | "}
 
-        <Route
-          path="add"
-          element={<StudentForm />}
-        />
+<Link to="/admin/report">
+Attendance Report
+</Link>
 
-        <Route
-          path="list"
-          element={<StudentList />}
-        />
+{" | "}
 
-      </Routes>
+<button
+onClick={()=>{
 
-    </div>
+localStorage.clear();
 
-  )
+window.location="/";
+
+}}
+>
+Logout
+</button>
+
+</nav>
+
+<hr/>
+
+<Outlet/>
+
+</div>
+
+)
 
 }
 
 
 
 // Student Dashboard
-function StudentDashboard() {
 
-  return (
+function StudentDashboard(){
 
-    <div>
+return(
 
-      <h1>Student Dashboard</h1>
+<div>
 
-      <button
-        onClick={() => {
-          localStorage.clear();
-          window.location = "/";
-        }}
-      >
-        Logout
-      </button>
+<h1>Student Dashboard</h1>
 
-      <StudentList />
+<button
+onClick={()=>{
 
-    </div>
+localStorage.clear();
 
-  )
+window.location="/";
+
+}}
+>
+
+Logout
+
+</button>
+
+<StudentList/>
+
+</div>
+
+)
 
 }
 
 
 
 // Protected Route
+
 function ProtectedRoute({
-  children,
-  role
-}) {
+children,
+role
+}){
 
-  const userRole =
-    localStorage.getItem("role");
+const userRole=
+localStorage.getItem("role");
 
-  return userRole === role
-    ? children
-    : <Navigate to="/" />
+return userRole===role
+? children
+: <Navigate to="/"/>
 
 }
 
 
 
-function App() {
+function App(){
 
-  return (
+return(
 
-    <Router>
+<Router>
 
-      <div className="App">
+<div className="App">
 
-        <Routes>
+<Routes>
 
-          {/* Login */}
+<Route
+path="/"
+element={<Login/>}
+/>
 
-          <Route
-            path="/"
-            element={<Login />}
-          />
-
-
-          {/* Register */}
-
-          <Route
-            path="/register"
-            element={<Register />}
-          />
+<Route
+path="/register"
+element={<Register/>}
+/>
 
 
-          {/* Admin */}
+<Route
+path="/admin"
+element={
+<ProtectedRoute role="admin">
+<AdminDashboard/>
+</ProtectedRoute>
+}
+>
 
-          <Route
-            path="/admin/*"
-            element={
-              <ProtectedRoute role="admin">
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
+<Route
+path="add"
+element={<StudentForm/>}
+/>
+
+<Route
+path="list"
+element={<StudentList/>}
+/>
+
+<Route
+path="attendance"
+element={<Attendance/>}
+/>
+
+<Route
+path="report"
+element={<AttendanceReport/>}
+/>
+
+</Route>
 
 
-          {/* Student */}
+<Route
+path="/student"
+element={
+<ProtectedRoute role="student">
+<StudentDashboard/>
+</ProtectedRoute>
+}
+/>
 
-          <Route
-            path="/student"
-            element={
-              <ProtectedRoute role="student">
-                <StudentDashboard />
-              </ProtectedRoute>
-            }
-          />
+<Route
+path="*"
+element={<Navigate to="/"/>}
+/>
 
-        </Routes>
+</Routes>
 
-      </div>
+</div>
 
-    </Router>
+</Router> 
 
-  )
+)
 
 }
 
